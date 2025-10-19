@@ -71,7 +71,6 @@ ItemType randomItemType()
     if(p < 0.66f) return PERK_LARGE;
     return PERK_TIME;
 }
-
 // Highscore
 void loadHighscore()
 {
@@ -79,6 +78,21 @@ void loadHighscore()
     if(f) f >> highscore;
 }
 
+void saveHighscore()
+{
+    if(score > highscore)
+    {
+        std::ofstream f("highscore.txt");
+        if(f) f << score;
+    }
+}
+
+// Utility to draw text
+void drawText(float x, float y, const std::string &s)
+{
+    glRasterPos2f(x,y);
+    for(char c: s) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+}
 
 
 //Jannatullllllllllllllllllllllllllllll
