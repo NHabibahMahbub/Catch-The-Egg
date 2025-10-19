@@ -78,3 +78,103 @@ void loadHighscore()
     std::ifstream f("highscore.txt");
     if(f) f >> highscore;
 }
+
+
+
+//Jannatullllllllllllllllllllllllllllll
+// Spawn an item at x (chicken position)
+void spawnItem(float x)
+{
+    Item it;
+    it.t = randomItemType();
+    it.x = x;
+    it.y = chickenY - 0.06f;
+    it.vy = 0.36f + randf(0.0f, 0.45f);
+    it.rot = randf(-40.0f, 40.0f);
+    items.push_back(it);
+}
+
+// Collision check with basket
+bool catchCheck(const Item &it, float bx, float by, float halfw)
+{
+    float left = bx-halfw, right = bx+halfw;
+    float top = by;
+    float bottom = by - basketHeight;
+    return (it.x > left && it.x < right && it.y < top && it.y > bottom);
+}
+
+// Start / reset game
+void startGame()
+{
+    state = RUNNING;
+    score = 0;
+    timeLeft = TIME_LIMIT;
+    lastTick = glutGet(GLUT_ELAPSED_TIME);
+    chickenX = 0.0f;
+    items.clear();
+    sinceLastLay = 0.0f;
+    perkSlow_until = perkLarge_until = 0.0;
+    basketHalfWidth = 0.13f;
+}
+
+// Rendering
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // background
+    drawBackground();
+
+    // bamboo stick & chicken
+    drawBamboo();
+    drawChicken(chickenX, chickenY);
+
+    // items
+    for(const Item &it: items) drawItem(it);
+
+    // basket
+    drawBasket(basketX, basketY, basketHalfWidth);
+
+    // HUD
+    glColor3f(0,0,0);
+    std::stringstream ss;
+    ss << "Score: " << score;
+    drawText(-0.95f, 0.92f, ss.str());
+    ss.str("");
+    ss.clear();
+    ss << "High: " << std::max(score, highscore);
+    drawText(-0.3f, 0.92f, ss.str());
+    ss.str("");
+    ss.clear();
+    ss << "Time: " << timeLeft;
+    drawText(0.55f, 0.92f, ss.str());
+
+    double now = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    if(now < perkSlow_until) drawText(-0.95f, 0.86f, "PERK: Slow");
+    if(now < perkLarge_until) drawText(-0.95f, 0.82f, "PERK: Large");
+
+    // Menu / paused / gameover overlays
+    if(state == MENU)
+    {
+        glColor3f(0,0,0);
+        drawText(-0.18f, 0.2f, "CATCH THE EGGS");
+        drawText(-0.32f, 0.05f, "Press SPACE to Start | Esc to Quit");
+        drawText(-0.32f, -0.05f, "Move basket: Arrow keys or Mouse");
+        drawText(-0.32f, -0.15f, "Catch eggs (golden 10, blue 5, normal 1). Avoid poop (-10).");
+    }
+    else if(state == PAUSED)
+    {
+        drawText(-0.08f, 0.0f, "PAUSED - press 'p' to resume");
+    }
+    else if(state == GAMEOVER)
+    {
+        drawText(-0.2f, 0.05f, "GAME OVER");
+        ss.str("");
+        ss.clear();
+        ss << "Final Score: " << score;
+        drawText(-0.28f, -0.05f, ss.str());
+        drawText(-0.28f, -0.15f, "Press 'r' to Restart or Esc for Menu");
+    }
+
+    glutSwapBuffers();
+}
