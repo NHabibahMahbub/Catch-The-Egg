@@ -11,7 +11,7 @@
 
 int WIN_W = 900, WIN_H = 600;
 
-enum GameState { MENU, RUNNING, PAUSED, GAMEOVER };
+enum GameState { MENU, RUNNING, PAUSED, GAMEOVER, HELP };
 GameState state = MENU;
 
 // Timing
@@ -217,6 +217,74 @@ void drawBamboo()
         glEnd();
     }
 }
+
+// Draw a stylized chicken (simple shapes)
+void drawChicken(float cx, float cy)
+{
+    // body
+    glColor3f(1.0f,0.92f,0.6f);
+    drawEllipse(cx-0.02f, cy-0.01f, 0.08f, 0.05f);
+    // head
+    glColor3f(1.0f,0.92f,0.6f);
+    drawCircle(cx+0.06f, cy+0.02f, 0.032f);
+    // eye
+    glColor3f(0,0,0);
+    drawCircle(cx+0.069f, cy+0.028f, 0.006f);
+    // beak (triangle)
+    glColor3f(1.0f,0.6f,0.12f);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(cx+0.095f, cy+0.02f);
+    glVertex2f(cx+0.115f, cy+0.01f);
+    glVertex2f(cx+0.095f, cy-0.00f);
+    glEnd();
+    // wing
+    glColor3f(1.0f,0.85f,0.5f);
+    drawEllipse(cx-0.055f, cy-0.01f, 0.03f, 0.02f);
+    // feet (tiny lines)
+    glColor3f(1.0f,0.6f,0.12f);
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex2f(cx-0.02f, cy-0.05f);
+    glVertex2f(cx-0.03f, cy-0.08f);
+    glVertex2f(cx+0.02f, cy-0.05f);
+    glVertex2f(cx+0.03f, cy-0.08f);
+    glEnd();
+}
+
+// Draw basket (rounded rectangle)
+void drawBasket(float bx, float by, float halfw)
+{
+    // rim
+    glColor3f(0.45f,0.28f,0.12f);
+    glBegin(GL_QUADS);
+    glVertex2f(bx - halfw, by);
+    glVertex2f(bx + halfw, by);
+    glVertex2f(bx + halfw, by - 0.02f);
+    glVertex2f(bx - halfw, by - 0.02f);
+    glEnd();
+
+// body
+    glColor3f(0.7f,0.48f,0.2f);
+    glBegin(GL_QUADS);
+    glVertex2f(bx - halfw * 0.95f, by - 0.02f);
+    glVertex2f(bx + halfw * 0.95f, by - 0.02f);
+    glVertex2f(bx + halfw * 0.6f, by - basketHeight);
+    glVertex2f(bx - halfw * 0.6f, by - basketHeight);
+    glEnd();
+
+// weave lines
+    glColor3f(0.56f,0.36f,0.17f);
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    for(float x = bx - halfw * 0.9f; x <= bx + halfw * 0.9f; x += (halfw * 0.9f)/4.0f)
+    {
+        glVertex2f(x, by - 0.02f);
+        glVertex2f(x, by - basketHeight);
+    }
+    glEnd();
+
+}
+
 
 //Jannatullllllllllllllllllllllllllllll
 // Spawn an item at x (chicken position)
