@@ -285,6 +285,65 @@ void drawBasket(float bx, float by, float halfw)
 
 }
 
+// Draw an item (egg/poop/perk)
+void drawItem(const Item &it)
+{
+    switch(it.t)
+    {
+    case NORMAL:
+        glColor3f(1.0f,1.0f,0.95f);
+        drawEllipse(it.x, it.y, 0.016f, 0.022f);
+        break;
+    case BLUE:
+        glColor3f(0.18f,0.35f,0.92f);
+        drawEllipse(it.x, it.y, 0.018f, 0.024f);
+        break;
+    case GOLDEN:
+        glColor3f(1.0f,0.85f,0.12f);
+        drawEllipse(it.x, it.y, 0.02f, 0.028f);
+        break;
+    case POOP:
+        glColor3f(0.25f,0.12f,0.03f);
+        // small stack of circles to look like poop
+        drawCircle(it.x, it.y, 0.018f);
+        drawCircle(it.x-0.009f, it.y+0.007f, 0.012f);
+        drawCircle(it.x+0.009f, it.y+0.007f, 0.012f);
+        break;
+    case PERK_SLOW:
+        glColor3f(0.7f,0.9f,1.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(it.x-0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y+0.02f);
+        glVertex2f(it.x-0.02f, it.y+0.02f);
+        glEnd();
+        glColor3f(0,0,0);
+        drawText(it.x-0.012f, it.y-0.006f, "S");
+        break;
+    case PERK_LARGE:
+        glColor3f(0.88f,0.7f,1.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(it.x-0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y+0.02f);
+        glVertex2f(it.x-0.02f, it.y+0.02f);
+        glEnd();
+        glColor3f(0,0,0);
+        drawText(it.x-0.012f, it.y-0.006f, "L");
+        break;
+    case PERK_TIME:
+        glColor3f(0.7f,1.0f,0.7f);
+        glBegin(GL_QUADS);
+        glVertex2f(it.x-0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y-0.02f);
+        glVertex2f(it.x+0.02f, it.y+0.02f);
+        glVertex2f(it.x-0.02f, it.y+0.02f);
+        glEnd();
+        glColor3f(0,0,0);
+        drawText(it.x-0.012f, it.y-0.006f, "+");
+        break;
+    }
+}
 
 //Jannatullllllllllllllllllllllllllllll
 // Spawn an item at x (chicken position)
