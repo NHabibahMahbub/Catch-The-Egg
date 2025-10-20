@@ -160,6 +160,64 @@ void drawBackground()
     drawEllipse(0.55f, 0.58f, 0.12f, 0.07f);
 }
 
+// Draw bamboo stick in the center
+// Draw natural horizontal bamboo branch with gently swaying leaves
+void drawBamboo()
+{
+    float branchY = chickenY - 0.07f; // just below the chicken
+
+    // Get elapsed time (for leaf animation)
+    float t = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+    // main branch – slightly curved
+    glColor3f(0.22f, 0.55f, 0.16f);
+    glBegin(GL_QUAD_STRIP);
+    for (float x = -0.9f; x <= 0.9f; x += 0.05f)
+    {
+        float curve = 0.03f * sinf(x * 3.0f);
+        glVertex2f(x, branchY + curve - 0.012f);
+        glVertex2f(x, branchY + curve + 0.012f);
+    }
+    glEnd();
+
+    // bamboo joints
+    glColor3f(0.15f, 0.4f, 0.12f);
+    glLineWidth(2.5f);
+    glBegin(GL_LINES);
+    for (float x = -0.9f; x <= 0.9f; x += 0.18f)
+    {
+        float curve = 0.03f * sinf(x * 3.0f);
+        glVertex2f(x, branchY + curve - 0.012f);
+        glVertex2f(x, branchY + curve + 0.012f);
+    }
+    glEnd();
+
+    // animated leaves
+    glColor3f(0.2f, 0.75f, 0.25f);
+    for (float x = -0.8f; x <= 0.8f; x += 0.25f)
+    {
+        float curve = 0.03f * sinf(x * 3.0f);
+        float leafY = branchY + curve + 0.02f;
+
+        // sway offset using time and position
+        float sway = 0.015f * sinf(t * 2.0f + x * 3.5f);
+
+        // right leaf
+        glBegin(GL_TRIANGLES);
+        glVertex2f(x, leafY);
+        glVertex2f(x + sway + 0.04f, leafY + 0.05f);
+        glVertex2f(x + sway + 0.02f, leafY);
+        glEnd();
+
+        // left leaf
+        glBegin(GL_TRIANGLES);
+        glVertex2f(x, leafY);
+        glVertex2f(x + sway - 0.04f, leafY + 0.05f);
+        glVertex2f(x + sway - 0.02f, leafY);
+        glEnd();
+    }
+}
+
 //Jannatullllllllllllllllllllllllllllll
 // Spawn an item at x (chicken position)
 void spawnItem(float x)
