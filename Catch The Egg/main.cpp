@@ -506,3 +506,44 @@ void updateSim(float dt)
         saveHighscore();
     }
 }
+
+// Timer callback ~60fps
+void timerFunc(int v){
+    int now = glutGet(GLUT_ELAPSED_TIME);
+    float dt = (now - lastTick)/1000.0f;
+    if(lastTick == 0) dt = 1.0f/60.0f;
+    lastTick = now;
+
+    if(state == RUNNING) updateSim(dt);
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timerFunc, 0);
+}
+
+// Input handlers
+void keyboard(unsigned char key, int x, int y){
+    if(key == 27){ // Esc
+        if(state == RUNNING || state == PAUSED || state == GAMEOVER){
+            state = MENU;
+            saveHighscore();
+        } else exit(0);
+    }
+    if(state == MENU){
+        if(key == ' '){
+            startGame();
+        }
+    } else if(state == RUNNING){
+        if(key == 'p' || key == 'P'){
+            state = PAUSED;
+        }
+    } else if(state == PAUSED){
+        if(key == 'p' || key == 'P'){
+            state = RUNNING;
+            lastTick = glutGet(GLUT_ELAPSED_TIME);
+        }
+    } else if(state == GAMEOVER){
+        if(key == 'r' || key == 'R'){
+            startGame();
+        }
+    }
+}
