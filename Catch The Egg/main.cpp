@@ -442,3 +442,67 @@ void display()
 
     glutSwapBuffers();
 }
+// Game logic update
+void updateSim(float dt)
+{
+    if(state != RUNNING) return;
+
+    // chicken moves horizontally along stick
+    chickenX += chickenDir * chickenSpeed * dt;
+    if(chickenX > 0.88f) { chickenX = 0.88f; chickenDir = -1; }
+    if(chickenX < -0.88f) { chickenX = -0.88f; chickenDir = 1; }
+
+    // laying interval (slowed by perk)
+    sinceLastLay += dt;
+    float currentLayInterval = layInterval;
+    double now = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+    if(now < perkSlow_until) currentLayInterval *= 1.6f;
+    if(sinceLastLay >= currentLayInterval){
+        sinceLastLay = 0.0f;
+        spawnItem(chickenX + randf(-0.07f, 0.07f));
+    }
+
+    // move items downward, rotate them slightly
+    for(Item &it: items){
+        float speedFactor = 1.0f;
+        if(now < perkSlow_until) speedFactor = 0.55f;
+        it.y -= it.vy * speedFactor * dt;
+        it.rot += 60.0f * dt;
+    }
+
+    // collisions & out-of-bounds
+    std::vector<Item> remaining;
+    for(const Item &it: items){
+        if(it.y < -1.4f) continue; // fell away
+        if(catchCheck(it, basketX, basketY, basketHalfWidth)){
+            // caught
+            switch(it.t){
+                case NORMAL: score += 1; break;
+                case BLUE: score += 5; break;
+                case GOLDEN: score += 10; break;
+                case POOP: score -= 10; if(score < 0) score = 0; break;
+                case PERK_SLOW: perkSlow_until = now + 6.0; break;
+                case PERK_LARGE: perkLarge_until = now + 8.0; basketHalfWidth = 0.22f; break;
+                case PERK_TIME: timeLeft += 6; break;
+            }
+        } else {
+            remaining.push_back(it);
+        }
+    }
+    items.swap(remaining);
+
+    // revert large perk when expired
+    if(now > perkLarge_until) basketHalfWidth = 0.13f;
+
+    // timer countdown
+    static float accum = 0.0f;
+    accum += dt;
+    if(accum >= 1.0f){
+        timeLeft -= (int)accum;
+        accum = 0.0f;
+    }
+    if(timeLeft <= 0){
+        state = GAMEOVER;
+        saveHighscore();
+    }
+}
