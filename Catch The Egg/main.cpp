@@ -547,3 +547,29 @@ void keyboard(unsigned char key, int x, int y){
         }
     }
 }
+
+
+void specialKey(int k, int x, int y){
+    if(state != RUNNING) return;
+    float move = 0.06f;
+    if(k == GLUT_KEY_LEFT) basketX -= move;
+    if(k == GLUT_KEY_RIGHT) basketX += move;
+    if(basketX < -0.95f) basketX = -0.95f;
+    if(basketX > 0.95f) basketX = 0.95f;
+}
+
+void passiveMouse(int mx, int my){
+    if(state != RUNNING) return;
+    basketX = screenToWorldX(mx);
+    if(basketX < -0.95f) basketX = -0.95f;
+    if(basketX > 0.95f) basketX = 0.95f;
+}
+
+// Window reshape
+void reshape(int w, int h){
+    WIN_W = w; WIN_H = h;
+    glViewport(0,0,w,h);
+    glMatrixMode(GL_PROJECTION); glLoadIdentity();
+    glOrtho(-1,1,-1,1,-1,1);
+    glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+}
