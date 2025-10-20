@@ -573,3 +573,47 @@ void reshape(int w, int h){
     glOrtho(-1,1,-1,1,-1,1);
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 }
+
+int main(int argc, char** argv)
+{
+    srand((unsigned)time(0));
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(WIN_W, WIN_H);
+    glutCreateWindow("Catch the Eggs");
+
+    loadHighscore();
+
+    glClearColor(1,1,1,1);
+
+    glutDisplayFunc(display);
+    glutIdleFunc([](){            // lambda to call updateSim
+        static int lastTime = glutGet(GLUT_ELAPSED_TIME);
+        int current = glutGet(GLUT_ELAPSED_TIME);
+        float dt = (current - lastTime) / 1000.0f;
+        lastTime = current;
+        updateSim(dt);
+        glutPostRedisplay();
+    });
+
+    glutKeyboardFunc([](unsigned char key, int x, int y){
+        if(key == 27) exit(0);           // Esc
+        if(key == ' ') startGame();      // Space
+        if(key == 'r' && state==GAMEOVER) startGame();
+        if(key == 'p' && state==RUNNING) state = PAUSED;
+        else if(key == 'p' && state==PAUSED) state = RUNNING;
+    });
+
+    glutSpecialFunc([](int key, int x, int y){
+        if(key == GLUT_KEY_LEFT) basketX -= 0.04f;
+        if(key == GLUT_KEY_RIGHT) basketX += 0.04f;
+    });
+
+    glutMotionFunc([](int x, int y){   // mouse movement
+        basketX = screenToWorldX(x);
+    });
+
+    glutMainLoop();
+    return 0;
+}
