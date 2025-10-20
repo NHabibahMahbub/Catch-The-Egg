@@ -346,6 +346,13 @@ void drawItem(const Item &it)
 }
 
 //Jannatullllllllllllllllllllllllllllll
+
+void playBackgroundMusic(const char* file)
+{
+    // Windows example
+    PlaySound(TEXT(file), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+
 // Spawn an item at x (chicken position)
 void spawnItem(float x)
 {
@@ -475,16 +482,41 @@ void updateSim(float dt)
     for(const Item &it: items){
         if(it.y < -1.4f) continue; // fell away
         if(catchCheck(it, basketX, basketY, basketHalfWidth)){
-            // caught
-            switch(it.t){
-                case NORMAL: score += 1; break;
-                case BLUE: score += 5; break;
-                case GOLDEN: score += 10; break;
-                case POOP: score -= 10; if(score < 0) score = 0; break;
-                case PERK_SLOW: perkSlow_until = now + 6.0; break;
-                case PERK_LARGE: perkLarge_until = now + 8.0; basketHalfWidth = 0.22f; break;
-                case PERK_TIME: timeLeft += 6; break;
+                        // caught 
+            switch(it.t)
+            {
+            case NORMAL:
+                score += 1;
+                PlaySound(TEXT("white.wav"), NULL, SND_FILENAME | SND_ASYNC); // white egg
+                break;
+            case BLUE:
+                score += 5;
+                PlaySound(TEXT("blue.wav"), NULL, SND_FILENAME | SND_ASYNC); // blue egg
+                break;
+            case GOLDEN:
+                score += 10;
+                PlaySound(TEXT("yellow.wav"), NULL, SND_FILENAME | SND_ASYNC); // golden/yellow egg
+                break;
+            case POOP:
+                score -= 10;
+                if(score < 0) score = 0;
+                PlaySound(TEXT("poop.wav"), NULL, SND_FILENAME | SND_ASYNC); // poop
+                break;
+            case PERK_SLOW:
+                perkSlow_until = now + 6.0;
+                PlaySound(TEXT("bonus.wav"), NULL, SND_FILENAME | SND_ASYNC); // perk bonus
+                break;
+            case PERK_LARGE:
+                perkLarge_until = now + 8.0;
+                basketHalfWidth = 0.22f;
+                PlaySound(TEXT("bonus.wav"), NULL, SND_FILENAME | SND_ASYNC); // perk bonus
+                break;
+            case PERK_TIME:
+                timeLeft += 6;
+                PlaySound(TEXT("bonus.wav"), NULL, SND_FILENAME | SND_ASYNC); // perk bonus
+                break;
             }
+
         } else {
             remaining.push_back(it);
         }
@@ -586,6 +618,8 @@ int main(int argc, char** argv)
     loadHighscore();
 
     glClearColor(1,1,1,1);
+
+    PlaySound(TEXT("background.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     glutDisplayFunc(display);
     glutIdleFunc([](){            // lambda to call updateSim
