@@ -94,6 +94,24 @@ void drawText(float x, float y, const std::string &s)
     for(char c: s) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
 }
 
+// World coordinate helpers: we use an orthographic -1..1 space
+float screenToWorldX(int sx)
+{
+    return (sx / (float)WIN_W)*2.0f - 1.0f;
+}
+
+// Drawing primitives
+void drawCircle(float cx, float cy, float r, int steps=28)
+{
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(cx,cy);
+    for(int i=0; i<=steps; i++)
+    {
+        float a = (i/(float)steps) * 2.0f * M_PI;
+        glVertex2f(cx + cosf(a)*r, cy + sinf(a)*r);
+    }
+    glEnd();
+}
 
 //Jannatullllllllllllllllllllllllllllll
 // Spawn an item at x (chicken position)
