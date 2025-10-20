@@ -113,6 +113,53 @@ void drawCircle(float cx, float cy, float r, int steps=28)
     glEnd();
 }
 
+void drawEllipse(float cx, float cy, float rx, float ry, int steps=28)
+{
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(cx,cy);
+    for(int i=0; i<=steps; i++)
+    {
+        float a = (i/(float)steps) * 2.0f * M_PI;
+        glVertex2f(cx + cosf(a)*rx, cy + sinf(a)*ry);
+    }
+    glEnd();
+}
+
+// Draw background (sky gradient + grass)
+void drawBackground()
+{
+    // Sky gradient (two rects)
+    glBegin(GL_QUADS);
+    glColor3f(0.69f,0.9f,1.0f);
+    glVertex2f(-1,-0.05f);
+    glColor3f(0.33f,0.75f,0.98f);
+    glVertex2f(1,-0.05f);
+    glColor3f(0.2f,0.6f,0.95f);
+    glVertex2f(1,1);
+    glColor3f(0.6f,0.9f,1.0f);
+    glVertex2f(-1,1);
+    glEnd();
+
+    // Grass strip
+    glColor3f(0.43f,0.87f,0.48f);
+    glBegin(GL_QUADS);
+    glVertex2f(-1,-1);
+    glVertex2f(1,-1);
+    glVertex2f(1,-0.05f);
+    glVertex2f(-1,-0.05f);
+    glEnd();
+
+    // Simple clouds - white ellipses
+    glColor3f(1,1,1);
+    drawEllipse(-0.7f, 0.7f, 0.16f, 0.08f);
+    drawEllipse(-0.55f, 0.73f, 0.12f, 0.06f);
+    drawEllipse(-0.6f, 0.68f, 0.12f, 0.07f);
+
+    drawEllipse(0.5f, 0.6f, 0.18f, 0.09f);
+    drawEllipse(0.65f, 0.63f, 0.12f, 0.06f);
+    drawEllipse(0.55f, 0.58f, 0.12f, 0.07f);
+}
+
 //Jannatullllllllllllllllllllllllllllll
 // Spawn an item at x (chicken position)
 void spawnItem(float x)
