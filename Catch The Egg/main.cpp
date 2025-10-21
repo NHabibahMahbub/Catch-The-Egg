@@ -8,6 +8,10 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")  // link Windows multimedia library
+
 
 int WIN_W = 900, WIN_H = 600;
 
@@ -437,6 +441,20 @@ void display()
     {
         drawText(-0.08f, 0.0f, "PAUSED - press 'p' to resume");
     }
+    else if(state == HELP)
+    {
+        glColor3f(0,0,0);
+        drawText(-0.20f, 0.6f, "HELP MENU");
+        drawText(-0.45f, 0.4f, "Catch eggs: Normal=1, Blue=5, Golden=10");
+        drawText(-0.45f, 0.3f, "Avoid poop: -10 points");
+        drawText(-0.45f, 0.2f, "Arrow keys / Mouse(Click and Hold to play): Move basket");
+        drawText(-0.45f, 0.1f, "P: Pause/Resume game");
+        drawText(-0.45f, 0.0f, "H: Help menu");
+        drawText(-0.45f, -0.1f, "SPACE: Start game from menu");
+        drawText(-0.45f, -0.2f, "Press Esc to quit the game");
+        drawText(-0.20f, -0.4f, "Press 'p' to resume this game" );
+    }
+
     else if(state == GAMEOVER)
     {
         drawText(-0.2f, 0.05f, "GAME OVER");
@@ -576,6 +594,21 @@ void keyboard(unsigned char key, int x, int y){
     } else if(state == GAMEOVER){
         if(key == 'r' || key == 'R'){
             startGame();
+        }
+        if(key == 'h' || key == 'H')    // open help from gameover
+        {
+            state = HELP;
+        }
+    }
+    else if(state == HELP)   // currently in help menu
+    {
+        if(key == 'p' || key == 'P' || key == 13)  // Enter or R to go back
+        {
+            state = RUNNING;  // or RUNNING if you want resume
+        }
+        if(key == 27)   // Esc also goes back
+        {
+            state = MENU;
         }
     }
 }
