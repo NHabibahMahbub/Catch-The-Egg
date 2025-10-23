@@ -280,7 +280,7 @@ void drawBasket(float bx, float by, float halfw)
     glColor3f(0.56f,0.36f,0.17f);
     glLineWidth(2);
     glBegin(GL_LINES);
-    for(float x = bx - halfw * 0.9f; x <= bx + halfw * 0.9f; x += (halfw * 0.9f)/4.0f)
+    for(float x = bx - halfw * 0.6f; x <= bx + halfw * 0.6f; x += (halfw * 0.9f)/4.0f)
     {
         glVertex2f(x, by - 0.02f);
         glVertex2f(x, by - basketHeight);
