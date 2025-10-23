@@ -349,7 +349,6 @@ void drawItem(const Item &it)
     }
 }
 
-//Jannatullllllllllllllllllllllllllllll
 
 void playBackgroundMusic(const char* file)
 {
@@ -412,17 +411,17 @@ void display()
 
     // HUD
     glColor3f(0,0,0);
-    std::stringstream ss;
-    ss << "Score: " << score;
-    drawText(-0.95f, 0.92f, ss.str());
-    ss.str("");
-    ss.clear();
-    ss << "High: " << std::max(score, highscore);
-    drawText(-0.3f, 0.92f, ss.str());
-    ss.str("");
-    ss.clear();
-    ss << "Time: " << timeLeft;
-    drawText(0.55f, 0.92f, ss.str());
+    std::stringstream ss;   // create a string stream (used to join text + numbers easily)
+    ss << "Score: " << score;          // put "Score: <number>" inside ss
+    drawText(-0.95f, 0.92f, ss.str()); // show it on screen
+    ss.str("");   // empty old text from ss (clear string data)
+    ss.clear();   // reset flags so we can use ss again safely
+    ss << "High: " << std::max(score, highscore); // put new text
+    drawText(-0.3f, 0.92f, ss.str());             // show on screen
+    ss.str("");   // clear text again
+    ss.clear();   // reset again for next use
+    ss << "Time: " << timeLeft;       // put new text
+    drawText(0.55f, 0.92f, ss.str()); // show it
 
     double now = glutGet(GLUT_ELAPSED_TIME)/1000.0;
     if(now < perkSlow_until) drawText(-0.95f, 0.86f, "PERK: Slow");
@@ -664,13 +663,7 @@ int main(int argc, char** argv)
         glutPostRedisplay();
     });
 
-    glutKeyboardFunc([](unsigned char key, int x, int y){
-        if(key == 27) exit(0);           // Esc
-        if(key == ' ') startGame();      // Space
-        if(key == 'r' && state==GAMEOVER) startGame();
-        if(key == 'p' && state==RUNNING) state = PAUSED;
-        else if(key == 'p' && state==PAUSED) state = RUNNING;
-    });
+    glutKeyboardFunc(keyboard);
 
     glutSpecialFunc([](int key, int x, int y){
         if(key == GLUT_KEY_LEFT) basketX -= 0.04f;
