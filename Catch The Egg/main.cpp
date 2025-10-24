@@ -432,9 +432,10 @@ void display()
     {
         glColor3f(0,0,0);
         drawText(-0.18f, 0.2f, "CATCH THE EGGS");
-        drawText(-0.32f, 0.05f, "Press SPACE to Start | Esc to Quit");
-        drawText(-0.32f, -0.05f, "Move basket: Arrow keys or Mouse");
-        drawText(-0.32f, -0.15f, "Catch eggs (golden 10, blue 5, normal 1). Avoid poop (-10).");
+        drawText(-0.60f, 0.05f, "Press SPACE to Start or left click on mouse | Esc to Quit | h for help");
+        drawText(-0.60f, -0.05f, "Move basket: Arrow keys or Mouse");
+        drawText(-0.60f, -0.15f, "Pause/Resume: Press p");
+        drawText(-0.60f, -0.25f, "Catch eggs (golden 10, blue 5, normal 1). Avoid poop (-10).");
     }
     else if(state == PAUSED)
     {
@@ -449,8 +450,8 @@ void display()
         drawText(-0.45f, 0.2f, "Arrow keys / Mouse(Click and Hold to play): Move basket");
         drawText(-0.45f, 0.1f, "P: Pause/Resume game");
         drawText(-0.45f, 0.0f, "H: Help menu");
-        drawText(-0.45f, -0.1f, "SPACE: Start game from menu");
-        drawText(-0.45f, -0.2f, "Press Esc to quit the game");
+        drawText(-0.45f, -0.1f, "SPACE/Left Click on Mouse: Start game from menu");
+        drawText(-0.45f, -0.2f, "Quit: Press Esc to quit the game");
         drawText(-0.20f, -0.4f, "Press 'p' to resume this game" );
     }
 
@@ -557,17 +558,21 @@ void updateSim(float dt)
 }
 
 // Timer callback ~60fps
-void timerFunc(int v){
-    int now = glutGet(GLUT_ELAPSED_TIME);
-    float dt = (now - lastTick)/1000.0f;
-    if(lastTick == 0) dt = 1.0f/60.0f;
-    lastTick = now;
+//timerFunc() holo ekta frame-based timer system, jeta prottek 16 millisecond por 
+//por abar nijeke call kore — mane eta continuously game ke chalay rakhbe, time gap (dt)
+//hisab kore updateSim(dt) diye game logic update korbe, and display abar redraw korbe.
+glutIdleFunc([]() {
+    static int lastTime = glutGet(GLUT_ELAPSED_TIME); // lastTime ekta static variable — mane eta ekbar initialize hoy
+    // eta ager frame er time (milliseconds) store kore rakhe
+    int current = glutGet(GLUT_ELAPSED_TIME); // current variable e ekhonkar time (milliseconds) rakha hocche
+    float dt = (current - lastTime) / 1000.0f;// duita time er difference ber kore seconds e convert kora hocche
+    // ei dt (delta time) holo ek frame theke next frame er gap
+    lastTime = current;// lastTime update kora hocche current diye
+    // jate porer frame e abar notun gap ber korte pari
 
-    if(state == RUNNING) updateSim(dt);
-
-    glutPostRedisplay();
-    glutTimerFunc(16, timerFunc, 0);
-}
+    updateSim(dt); // ei function ta game er logic update kore (egg fall, collision, timer, etc.)
+    glutPostRedisplay(); // OpenGL ke bole screen abar redraw koro (mane display() abar call koro)
+});
 
 // Input handlers
 void keyboard(unsigned char key, int x, int y){
@@ -612,8 +617,18 @@ void keyboard(unsigned char key, int x, int y){
     }
 }
 
+void mouse(int button, int stateClick, int x, int y)
+{
+    if(state == MENU)
+    {
+        if(button == GLUT_LEFT_BUTTON && stateClick == GLUT_DOWN)
+        {
+            startGame();  // start when left mouse button is clicked
+        }
+    }
+}
 
-void specialKey(int k, int x, int y){
+void specialKey(int k, int x, int y){ //movements by arrow keys
     if(state != RUNNING) return;
     float move = 0.06f;
     if(k == GLUT_KEY_LEFT) basketX -= move;
@@ -622,7 +637,7 @@ void specialKey(int k, int x, int y){
     if(basketX > 0.95f) basketX = 0.95f;
 }
 
-void passiveMouse(int mx, int my){
+void passiveMouse(int mx, int my){ // mouse movement by just cursor
     if(state != RUNNING) return;
     basketX = screenToWorldX(mx);
     if(basketX < -0.95f) basketX = -0.95f;
@@ -654,20 +669,26 @@ int main(int argc, char** argv)
     PlaySound(TEXT("background.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     glutDisplayFunc(display);
-    glutIdleFunc([](){            // lambda to call updateSim
-        static int lastTime = glutGet(GLUT_ELAPSED_TIME);
-        int current = glutGet(GLUT_ELAPSED_TIME);
-        float dt = (current - lastTime) / 1000.0f;
-        lastTime = current;
-        updateSim(dt);
-        glutPostRedisplay();
-    });
+// ei lambda function er vitore amra game er frame update + redraw kortesi
+
+glutIdleFunc([]() {
+    static int lastTime = glutGet(GLUT_ELAPSED_TIME); // lastTime ekta static variable — mane eta ekbar initialize hoy
+    // eta ager frame er time (milliseconds) store kore rakhe
+    int current = glutGet(GLUT_ELAPSED_TIME); //  current variable e ekhonkar time (milliseconds) rakha hocche
+    float dt = (current - lastTime) / 1000.0f;  // duita time er difference ber kore seconds e convert kora hocche
+    // ei dt (delta time) holo ek frame theke next frame er gap
+    lastTime = current; //  lastTime update kora hocche current diye;  jate porer frame e abar notun gap ber korte pari
+    updateSim(dt); // ei function ta game er logic update kore (egg fall, collision, timer, etc.)
+    glutPostRedisplay(); // OpenGL ke bole screen abar redraw koro (mane display() abar call koro)
+
+});
 
     glutKeyboardFunc(keyboard);
     glutPassiveMotionFunc(passiveMouse);
     glutSpecialFunc(specialKey);
+    glutMouseFunc(mouse);
     
-    glutMotionFunc([](int x, int y){   // mouse movement
+    glutMotionFunc([](int x, int y){   // mouse movement by clicking
         basketX = screenToWorldX(x);
     });
 
