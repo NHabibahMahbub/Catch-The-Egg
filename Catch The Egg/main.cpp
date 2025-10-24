@@ -664,12 +664,9 @@ int main(int argc, char** argv)
     });
 
     glutKeyboardFunc(keyboard);
-
-    glutSpecialFunc([](int key, int x, int y){
-        if(key == GLUT_KEY_LEFT) basketX -= 0.04f;
-        if(key == GLUT_KEY_RIGHT) basketX += 0.04f;
-    });
-
+    glutPassiveMotionFunc(passiveMouse);
+    glutSpecialFunc(specialKey);
+    
     glutMotionFunc([](int x, int y){   // mouse movement
         basketX = screenToWorldX(x);
     });
