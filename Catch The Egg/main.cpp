@@ -690,6 +690,8 @@ glutIdleFunc([]() {
     
     glutMotionFunc([](int x, int y){   // mouse movement by clicking
         basketX = screenToWorldX(x);
+        if(basketX < -0.95f) basketX = -0.95f;
+        if(basketX > 0.95f) basketX = 0.95f;
     });
 
     glutMainLoop();
