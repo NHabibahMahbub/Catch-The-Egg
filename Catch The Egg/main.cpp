@@ -669,19 +669,19 @@ int main(int argc, char** argv)
     PlaySound(TEXT("background.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     glutDisplayFunc(display);
-// ei lambda function er vitore amra game er frame update + redraw kortesi
+    // ei lambda function er vitore amra game er frame update + redraw kortesi
 
-glutIdleFunc([]() {
-    static int lastTime = glutGet(GLUT_ELAPSED_TIME); // lastTime ekta static variable — mane eta ekbar initialize hoy
-    // eta ager frame er time (milliseconds) store kore rakhe
-    int current = glutGet(GLUT_ELAPSED_TIME); //  current variable e ekhonkar time (milliseconds) rakha hocche
-    float dt = (current - lastTime) / 1000.0f;  // duita time er difference ber kore seconds e convert kora hocche
-    // ei dt (delta time) holo ek frame theke next frame er gap
-    lastTime = current; //  lastTime update kora hocche current diye;  jate porer frame e abar notun gap ber korte pari
-    updateSim(dt); // ei function ta game er logic update kore (egg fall, collision, timer, etc.)
-    glutPostRedisplay(); // OpenGL ke bole screen abar redraw koro (mane display() abar call koro)
-
-});
+    glutIdleFunc([]() {
+        static int lastTime = glutGet(GLUT_ELAPSED_TIME); // lastTime ekta static variable — mane eta ekbar initialize hoy
+        // eta ager frame er time (milliseconds) store kore rakhe
+        int current = glutGet(GLUT_ELAPSED_TIME); //  current variable e ekhonkar time (milliseconds) rakha hocche
+        float dt = (current - lastTime) / 1000.0f;  // duita time er difference ber kore seconds e convert kora hocche
+        // ei dt (delta time) holo ek frame theke next frame er gap
+        lastTime = current; //  lastTime update kora hocche current diye;  jate porer frame e abar notun gap ber korte pari
+        updateSim(dt); // ei function ta game er logic update kore (egg fall, collision, timer, etc.)
+        glutPostRedisplay(); // OpenGL ke bole screen abar redraw koro (mane display() abar call koro)
+    
+    });
 
     glutKeyboardFunc(keyboard);
     glutPassiveMotionFunc(passiveMouse);
