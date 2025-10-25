@@ -557,22 +557,22 @@ void updateSim(float dt)
     }
 }
 
-// Timer callback ~60fps
-//timerFunc() holo ekta frame-based timer system, jeta prottek 16 millisecond por 
-//por abar nijeke call kore — mane eta continuously game ke chalay rakhbe, time gap (dt)
-//hisab kore updateSim(dt) diye game logic update korbe, and display abar redraw korbe.
-glutIdleFunc([]() {
-    static int lastTime = glutGet(GLUT_ELAPSED_TIME); // lastTime ekta static variable — mane eta ekbar initialize hoy
-    // eta ager frame er time (milliseconds) store kore rakhe
-    int current = glutGet(GLUT_ELAPSED_TIME); // current variable e ekhonkar time (milliseconds) rakha hocche
-    float dt = (current - lastTime) / 1000.0f;// duita time er difference ber kore seconds e convert kora hocche
-    // ei dt (delta time) holo ek frame theke next frame er gap
-    lastTime = current;// lastTime update kora hocche current diye
-    // jate porer frame e abar notun gap ber korte pari
+    // Timer callback ~60fps
+    //timerFunc() holo ekta frame-based timer system, jeta prottek 16 millisecond por
+    //por abar nijeke call kore — mane eta continuously game ke chalay rakhbe, time gap (dt)
+    //hisab kore updateSim(dt) diye game logic update korbe, and display abar redraw korbe.
+void timerFunc(int v)
+{
+    int now = glutGet(GLUT_ELAPSED_TIME);
+    float dt = (now - lastTick)/1000.0f;
+    if(lastTick == 0) dt = 1.0f/60.0f;
+    lastTick = now;
 
-    updateSim(dt); // ei function ta game er logic update kore (egg fall, collision, timer, etc.)
-    glutPostRedisplay(); // OpenGL ke bole screen abar redraw koro (mane display() abar call koro)
-});
+    if(state == RUNNING) updateSim(dt);
+
+    glutPostRedisplay();
+    glutTimerFunc(16, timerFunc, 0);
+}
 
 // Input handlers
 void keyboard(unsigned char key, int x, int y){
